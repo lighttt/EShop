@@ -1,30 +1,49 @@
+import 'package:eshop/model/product.dart';
 import 'package:eshop/provider/products.dart';
+import 'package:eshop/widgets/product_grid.dart';
 import 'package:eshop/widgets/product_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ProductOverviewScreen extends StatelessWidget {
+enum FilterOptions { Favourites, All }
+
+class ProductOverviewScreen extends StatefulWidget {
+  //show or not show favourites
+  @override
+  _ProductOverviewScreenState createState() => _ProductOverviewScreenState();
+}
+
+class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
+  bool _showFavourites = false;
+
   @override
   Widget build(BuildContext context) {
     final loadedProducts = Provider.of<Products>(context).items;
     return Scaffold(
       appBar: AppBar(
         title: Text("E-Shop"),
+        actions: <Widget>[
+          PopupMenuButton(
+            icon: Icon(Icons.more_vert),
+            onSelected: (FilterOptions selectedOption) {
+              setState(() {
+                if (selectedOption == FilterOptions.Favourites) {
+                  _showFavourites = true;
+                } else {
+                  _showFavourites = false;
+                }
+              });
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                  value: FilterOptions.Favourites,
+                  child: Text("Show Favourites")),
+              PopupMenuItem(value: FilterOptions.All, child: Text("Show All")),
+            ],
+          )
+        ],
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(10),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 3 / 2),
-        itemBuilder: (ctx, i) =>
-            ProductItem(
-              loadedProducts[i].id,
-              loadedProducts[i].title, 
-              loadedProducts[i].imageURL),
-        itemCount: loadedProducts.length,
-      ),
+      body: ProductGrid(_showFavourites)
     );
   }
 }
