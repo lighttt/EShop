@@ -52,4 +52,13 @@ class Cart with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  //total amount in the cart
+  double get totalAmount {
+    double total = 0.0;
+    _items.forEach((key, cartItem) {
+      total += cartItem.quanity * cartItem.price;
+    });
+    return total;
+  }
 }

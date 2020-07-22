@@ -1,6 +1,7 @@
 import 'package:eshop/model/product.dart';
 import 'package:eshop/provider/cart_provider.dart';
 import 'package:eshop/provider/products.dart';
+import 'package:eshop/screens/cart_screen.dart';
 import 'package:eshop/widgets/badge.dart';
 import 'package:eshop/widgets/product_grid.dart';
 import 'package:eshop/widgets/product_item.dart';
@@ -50,7 +51,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               },
               child: IconButton(
                 icon: Icon(Icons.shopping_cart),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, CartScreen.routeName);
+                },
               ),
             )
           ],
