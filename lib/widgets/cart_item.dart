@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:eshop/provider/cart_provider.dart';
 
 class CartItem extends StatelessWidget {
   final String id;
@@ -11,9 +13,13 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<Cart>(context);
     return Dismissible(
       key: ValueKey(DateTime.now()),
       direction: DismissDirection.endToStart,
+      onDismissed: (direction) {
+        cart.removeFromCart(cartId);
+      },
       background: Container(
         color: Colors.red,
         child: Icon(
