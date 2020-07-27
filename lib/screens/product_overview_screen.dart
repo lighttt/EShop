@@ -1,17 +1,18 @@
-import 'package:eshop/model/product.dart';
 import 'package:eshop/provider/cart_provider.dart';
 import 'package:eshop/provider/products.dart';
 import 'package:eshop/screens/cart_screen.dart';
+import 'package:eshop/widgets/app_drawer.dart';
 import 'package:eshop/widgets/badge.dart';
 import 'package:eshop/widgets/product_grid.dart';
-import 'package:eshop/widgets/product_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+//show or not show favourites
 enum FilterOptions { Favourites, All }
 
 class ProductOverviewScreen extends StatefulWidget {
-  //show or not show favourites
+  static const String routeName = "/product_overview_screen";
+
   @override
   _ProductOverviewScreenState createState() => _ProductOverviewScreenState();
 }
@@ -58,6 +59,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             )
           ],
         ),
+        drawer: AppDrawer(),
         body: ProductGrid(_showFavourites));
   }
 }

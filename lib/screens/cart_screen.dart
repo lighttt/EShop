@@ -43,7 +43,6 @@ class CartScreen extends StatelessWidget {
                       order.addOrder(
                           cart.items.values.toList(), cart.totalAmount);
                       cart.clearCart();
-                      Navigator.pushNamed(context, OrderScreen.routeName);
                     },
                     child: Text(
                       "ORDER NOW",
