@@ -1,9 +1,11 @@
 import 'package:eshop/provider/order_provider.dart';
 import 'package:eshop/provider/products.dart';
 import 'package:eshop/screens/cart_screen.dart';
+import 'package:eshop/screens/edit_product_screen.dart';
 import 'package:eshop/screens/order_screen.dart';
 import 'package:eshop/screens/product_details_screen.dart';
 import 'package:eshop/screens/product_overview_screen.dart';
+import 'package:eshop/screens/user_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,10 +39,12 @@ class MyApp extends StatelessWidget {
             fontFamily: "Lato"),
         home: ProductOverviewScreen(),
         routes: {
-           ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
+          ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
           ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
-           OrderScreen.routeName: (ctx) => OrderScreen()
+          OrderScreen.routeName: (ctx) => OrderScreen(),
+          UserProductScreen.routeName: (ctx) => UserProductScreen(),
+          EditProductScreen.routeName: (ctx) => EditProductScreen()
         },
       ),
     );
