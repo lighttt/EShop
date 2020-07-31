@@ -23,7 +23,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   TextEditingController _imgController = TextEditingController();
 
   //values
-  var _editProduct = Product(
+  Product _editProduct = Product(
     id: null,
     title: "",
     price: 0,
@@ -31,10 +31,42 @@ class _EditProductScreenState extends State<EditProductScreen> {
     imageURL: "",
   );
 
+  //bool to get data only for the first
+  bool _isInit = true;
+
+  var _initValues = {
+    "title": "",
+    "price": "",
+    "description": "",
+    "imageURL": "",
+  };
+
   @override
   void initState() {
     super.initState();
     _imgController.addListener(updateImageUrl);
+  }
+
+  // helps us to get the route arguments
+  // its is called time to time so we get id and initialize value only once
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit) {
+      final String productId =
+          ModalRoute.of(context).settings.arguments as String;
+      if (productId != null) {
+        _editProduct = Provider.of<Products>(context).findById(productId);
+        _initValues = {
+          "title": _editProduct.title,
+          "price": _editProduct.price.toString(),
+          "description": _editProduct.description,
+          "imageURL": "",
+        };
+        _imgController.text = _editProduct.imageURL;
+      }
+    }
+    _isInit = false;
   }
 
   @override
@@ -69,7 +101,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
     _form.currentState.save();
-    Provider.of<Products>(context, listen: false).addProduct(_editProduct);
+    if (_editProduct.id != null) {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editProduct.id, _editProduct);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(_editProduct);
+    }
+
     Navigator.pop(context);
   }
 
@@ -77,7 +115,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Product"),
+        title: Text(_editProduct.id == null ? "Add Product" : "Edit Product"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),
@@ -93,6 +131,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           padding: EdgeInsets.all(16),
           children: <Widget>[
             TextFormField(
+              initialValue: _initValues['title'],
               decoration: InputDecoration(labelText: "Title"),
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.next,
@@ -119,6 +158,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               },
             ),
             TextFormField(
+              initialValue: _initValues['price'],
               focusNode: _priceFocusNode,
               decoration: InputDecoration(labelText: "Price"),
               keyboardType: TextInputType.number,
@@ -149,6 +189,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               },
             ),
             TextFormField(
+              initialValue: _initValues['description'],
               focusNode: _descFocusNode,
               maxLines: 3,
               decoration: InputDecoration(labelText: "Description"),
