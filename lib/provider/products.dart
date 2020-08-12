@@ -1,5 +1,7 @@
 import 'package:eshop/model/product.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -55,14 +57,30 @@ class Products with ChangeNotifier {
 
   //add new product
   void addProduct(Product product) {
-    final newProduct = Product(
-        id: DateTime.now().toString(),
-        title: product.title,
-        price: product.price,
-        description: product.description,
-        imageURL: product.imageURL);
-    _items.add(newProduct);
-    notifyListeners();
+    const url = "https://eshop-51af6.firebaseio.com/products.json";
+
+    http
+        .post(url,
+            body: json.encode({
+              'title': product.title,
+              'price': product.price,
+              'description': product.description,
+              'imageURL': product.imageURL,
+              'isFavourite': product.isFavourite
+            }))
+        .then((response) {
+      print(json.decode(response.body));
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          price: product.price,
+          description: product.description,
+          imageURL: product.imageURL);
+      _items.add(newProduct);
+      notifyListeners();
+    }).catchError((error) {
+      print(error);
+    });
   }
 
   //update the previous product
