@@ -56,10 +56,10 @@ class Products with ChangeNotifier {
   }
 
   //add new product
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     const url = "https://eshop-51af6.firebaseio.com/products.json";
 
-    http
+    return http
         .post(url,
             body: json.encode({
               'title': product.title,
@@ -80,6 +80,7 @@ class Products with ChangeNotifier {
       notifyListeners();
     }).catchError((error) {
       print(error);
+      throw (error);
     });
   }
 
