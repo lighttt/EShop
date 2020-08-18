@@ -1,3 +1,4 @@
+import 'package:eshop/helper/API.dart';
 import 'package:eshop/model/product.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -57,10 +58,8 @@ class Products with ChangeNotifier {
 
   //add new product
   Future<void> addProduct(Product product) {
-    const url = "https://eshop-51af6.firebaseio.com/products.json";
-
     return http
-        .post(url,
+        .post(API.Products,
             body: json.encode({
               'title': product.title,
               'price': product.price,
@@ -82,6 +81,29 @@ class Products with ChangeNotifier {
       print(error);
       throw (error);
     });
+  }
+
+  Future<void> fetchAndSetProducts() async {
+    try {
+      final response = await http.get(API.Products);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((prodId, prodData) {
+        loadedProducts.add(Product(
+          id: prodId,
+          title: prodData['title'],
+          description: prodData['description'],
+          price: double.parse(prodData['price'].toString()),
+          isFavourite: prodData['isFavourite'],
+          imageURL: prodData['imageURL'],
+        ));
+      });
+      _items = loadedProducts;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
 
   //update the previous product

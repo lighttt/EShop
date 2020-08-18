@@ -22,44 +22,52 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loadedProducts = Provider.of<Products>(context).items;
     return Scaffold(
-        appBar: AppBar(
-          title: Text("E-Shop"),
-          actions: <Widget>[
-            PopupMenuButton(
-              icon: Icon(Icons.more_vert),
-              onSelected: (FilterOptions selectedOption) {
-                setState(() {
-                  if (selectedOption == FilterOptions.Favourites) {
-                    _showFavourites = true;
-                  } else {
-                    _showFavourites = false;
-                  }
-                });
+      appBar: AppBar(
+        title: Text("E-Shop"),
+        actions: <Widget>[
+          PopupMenuButton(
+            icon: Icon(Icons.more_vert),
+            onSelected: (FilterOptions selectedOption) {
+              setState(() {
+                if (selectedOption == FilterOptions.Favourites) {
+                  _showFavourites = true;
+                } else {
+                  _showFavourites = false;
+                }
+              });
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                  value: FilterOptions.Favourites,
+                  child: Text("Show Favourites")),
+              PopupMenuItem(value: FilterOptions.All, child: Text("Show All")),
+            ],
+          ),
+          Consumer<Cart>(
+            builder: (ctx, cart, child) {
+              return Badge(value: cart.itemCount.toString(), child: child);
+            },
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {
+                Navigator.pushNamed(context, CartScreen.routeName);
               },
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                    value: FilterOptions.Favourites,
-                    child: Text("Show Favourites")),
-                PopupMenuItem(
-                    value: FilterOptions.All, child: Text("Show All")),
-              ],
             ),
-            Consumer<Cart>(
-              builder: (ctx, cart, child) {
-                return Badge(value: cart.itemCount.toString(), child: child);
-              },
-              child: IconButton(
-                icon: Icon(Icons.shopping_cart),
-                onPressed: () {
-                  Navigator.pushNamed(context, CartScreen.routeName);
-                },
-              ),
-            )
-          ],
-        ),
-        drawer: AppDrawer(),
-        body: ProductGrid(_showFavourites));
+          )
+        ],
+      ),
+      drawer: AppDrawer(),
+      body: FutureBuilder(
+        future:
+            Provider.of<Products>(context, listen: false).fetchAndSetProducts(),
+        builder: (ctx, snapshot) =>
+            snapshot.connectionState == ConnectionState.waiting
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ProductGrid(_showFavourites),
+      ),
+    );
   }
 }
