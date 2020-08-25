@@ -1,5 +1,5 @@
 import 'package:eshop/provider/order_provider.dart';
-import 'package:eshop/provider/products.dart';
+import 'package:eshop/provider/products_provider.dart';
 import 'package:eshop/screens/cart_screen.dart';
 import 'package:eshop/screens/edit_product_screen.dart';
 import 'package:eshop/screens/order_screen.dart';

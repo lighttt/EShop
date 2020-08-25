@@ -1,4 +1,4 @@
-import 'package:eshop/provider/products.dart';
+import 'package:eshop/provider/products_provider.dart';
 import 'package:eshop/widgets/app_drawer.dart';
 import 'package:eshop/widgets/user_product_item.dart';
 import 'package:flutter/material.dart';
