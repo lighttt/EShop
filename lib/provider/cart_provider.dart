@@ -31,7 +31,6 @@ class Cart with ChangeNotifier {
     //if hamro product pahila add bhacha bhane
     // just update the quantity of that product
     //else naya product ani naya product
-
     if (_items.containsKey(productId)) {
       _items.update(
           productId,
