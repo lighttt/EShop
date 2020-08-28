@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:eshop/exception/auth_expection.dart';
+import 'package:eshop/screens/product_overview_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +18,7 @@ class AuthScreen extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                   colors: [
                     Color.fromRGBO(215, 117, 255, 0.5),
                     Color.fromRGBO(255, 188, 117, 0.9),
@@ -116,7 +118,32 @@ class _AuthCardState extends State<AuthCard> {
         await _firebaseAuth.createUserWithEmailAndPassword(
             email: _authData["email"], password: _authData["password"]);
       }
-    } catch (error) {}
+      Navigator.pushNamed(context, ProductOverviewScreen.routeName);
+    } catch (error) {
+      AuthResultStatus status = AuthResultException.handleException(error);
+      String message = AuthResultException.generatedExceptionMessage(status);
+      _showErrorDialog(message);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text("An error occured"),
+              content: Text(errorMessage),
+              actions: [
+                FlatButton(
+                  child: Text("Okay"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ));
   }
 
   //switch login signup

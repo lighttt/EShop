@@ -1,10 +1,14 @@
 import 'package:eshop/model/product.dart';
 import 'package:eshop/provider/cart_provider.dart';
 import 'package:eshop/screens/product_details_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     print("Widget rebuilds");
@@ -34,8 +38,10 @@ class ProductItem extends StatelessWidget {
                 icon: product.isFavourite
                     ? Icon(Icons.favorite)
                     : Icon(Icons.favorite_border),
-                onPressed: () {
-                  product.toggleFavourite();
+                onPressed: () async {
+                  String apiToken = await _auth.currentUser.getIdToken();
+                  await product.toggleFavourite(
+                      _auth.currentUser.uid, apiToken);
                 },
                 color: Theme.of(context).accentColor),
           ),

@@ -7,12 +7,17 @@ import 'package:eshop/screens/order_screen.dart';
 import 'package:eshop/screens/product_details_screen.dart';
 import 'package:eshop/screens/product_overview_screen.dart';
 import 'package:eshop/screens/user_product_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'provider/cart_provider.dart';
 
-void main() {
+Future<void> main() async {
+  // widgets initialize
+  WidgetsFlutterBinding.ensureInitialized();
+  //firebase app initialize
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
