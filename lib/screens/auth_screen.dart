@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:eshop/exception/auth_expection.dart';
+import 'package:eshop/provider/auth_provider.dart';
 import 'package:eshop/screens/product_overview_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum AuthMode { Login, Signup }
 
@@ -89,9 +91,6 @@ class _AuthCardState extends State<AuthCard> {
   TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  // firebase
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
   //form key
   final GlobalKey<FormState> _formKey = GlobalKey();
 
@@ -112,17 +111,15 @@ class _AuthCardState extends State<AuthCard> {
     });
     try {
       if (_authMode == AuthMode.Login) {
-        await _firebaseAuth.signInWithEmailAndPassword(
-            email: _authData["email"], password: _authData["password"]);
+        await Provider.of<AuthProvider>(context, listen: false)
+            .signIn(_authData["email"], _authData["password"]);
       } else {
-        await _firebaseAuth.createUserWithEmailAndPassword(
-            email: _authData["email"], password: _authData["password"]);
+        await Provider.of<AuthProvider>(context, listen: false)
+            .signUp(_authData["email"], _authData["password"]);
       }
       Navigator.pushNamed(context, ProductOverviewScreen.routeName);
-    } catch (error) {
-      AuthResultStatus status = AuthResultException.handleException(error);
-      String message = AuthResultException.generatedExceptionMessage(status);
-      _showErrorDialog(message);
+    } catch (message) {
+      _showErrorDialog(message.toString());
     }
     setState(() {
       _isLoading = false;
