@@ -7,6 +7,7 @@ class AuthProvider extends ChangeNotifier {
   String userId;
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  // sign in with id token
   Future<void> signIn(String email, String password) async {
     try {
       final response = await _firebaseAuth.signInWithEmailAndPassword(
@@ -21,6 +22,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // sign up method with new token
   Future<void> signUp(String email, String password) async {
     try {
       final response = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -35,6 +37,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // logout the user
   Future<void> logout() async {
     try {
       await _firebaseAuth.signOut();
@@ -44,5 +47,12 @@ class AuthProvider extends ChangeNotifier {
     } catch (error) {
       throw error;
     }
+  }
+
+// get the new token and user id
+  void updateNewToken(String newToken, String uID) {
+    authToken = newToken;
+    userId = uID;
+    notifyListeners();
   }
 }

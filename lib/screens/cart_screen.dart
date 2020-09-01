@@ -39,8 +39,8 @@ class CartScreen extends StatelessWidget {
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {
-                      order.addOrder(
+                    onPressed: () async {
+                      await order.addOrder(
                           cart.items.values.toList(), cart.totalAmount);
                       cart.clearCart();
                     },

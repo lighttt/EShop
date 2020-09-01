@@ -8,6 +8,7 @@ import 'package:eshop/screens/order_screen.dart';
 import 'package:eshop/screens/product_details_screen.dart';
 import 'package:eshop/screens/product_overview_screen.dart';
 import 'package:eshop/screens/user_product_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,38 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isInit = true;
+  bool _isLogin = false;
+
+  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+//  Future<void> getCurrentUser() async {
+//    final response = _firebaseAuth.currentUser;
+//    if (response != null) {
+//      //refresh the previous
+//      final newToken = await response.getIdToken();
+//      Provider.of<AuthProvider>(context, listen: false)
+//          .updateNewToken(newToken, response.uid);
+//      _isLogin = true;
+//    }
+//    _isLogin = false;
+//  }
+//
+//  @override
+//  void didChangeDependencies() {
+//    if (_isInit) {
+//      getCurrentUser();
+//    }
+//    _isInit = false;
+//    super.didChangeDependencies();
+//  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -30,15 +62,20 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthProvider(),
         ),
         ChangeNotifierProxyProvider<AuthProvider, Products>(
+            create: (context) => Products("", "", []),
             update: (context, AuthProvider auth, Products previousProducts) {
-          return Products(auth.authToken, auth.userId,
-              previousProducts == null ? [] : previousProducts.items);
-        }),
+              return Products(auth.authToken, auth.userId,
+                  previousProducts == null ? [] : previousProducts.items);
+            }),
         ChangeNotifierProvider(
           create: (context) => Cart(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Orders(),
+        ChangeNotifierProxyProvider<AuthProvider, Orders>(
+          create: (context) => Orders("", "", []),
+          update: (context, AuthProvider auth, Orders previousOrders) => Orders(
+              auth.authToken,
+              auth.userId,
+              previousOrders == null ? [] : previousOrders.orders),
         ),
       ],
       child: Consumer<AuthProvider>(
