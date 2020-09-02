@@ -87,7 +87,9 @@ class _MyAppState extends State<MyApp> {
                 primaryColor: Colors.green,
                 accentColor: Colors.red,
                 fontFamily: "Lato"),
-            home: auth.userId == null ? AuthScreen() : ProductOverviewScreen(),
+            home: _firebaseAuth.currentUser == null
+                ? AuthScreen()
+                : ProductOverviewScreen(),
             routes: {
               ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
               ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),

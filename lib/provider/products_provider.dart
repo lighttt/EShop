@@ -29,17 +29,16 @@ class Products with ChangeNotifier {
   }
 
   //add new product
-  Future<void> addProduct(Product product) {
-    return http
-        .post(API.Products,
-            body: json.encode({
-              'title': product.title,
-              'price': product.price,
-              'description': product.description,
-              'imageURL': product.imageURL,
-              'isFavourite': product.isFavourite
-            }))
-        .then((response) {
+  Future<void> addProduct(Product product) async {
+    try {
+      final response = await http.post(API.Products + "?auth=$_authToken",
+          body: json.encode({
+            'title': product.title,
+            'price': product.price,
+            'description': product.description,
+            'imageURL': product.imageURL,
+            'creatorId': _userId
+          }));
       print(json.decode(response.body));
       final newProduct = Product(
           id: json.decode(response.body)['name'],
@@ -49,16 +48,27 @@ class Products with ChangeNotifier {
           imageURL: product.imageURL);
       _items.add(newProduct);
       notifyListeners();
-    }).catchError((error) {
-      print(error);
-      throw (error);
-    });
+    } catch (error) {
+      throw error;
+    }
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<List<Product>> fetchAndSetProducts([bool filterByUser = false]) async {
     try {
-      final response = await http.get(API.Products + "?auth=$_authToken");
+      final filterByString =
+          filterByUser ? 'orderBy="creatorId"&equalTo="$_userId"' : "";
+
+      final response = await http
+          .get(API.Products + "?auth=$_authToken" + "&$filterByString");
+      print(API.Products + "?auth=$_authToken" + "&$filterByString");
+      print(response.toString());
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+
+      //favourite api
+      final favouriteResponse = await http
+          .get(API.toggleFavourite + "$_userId.json" + "?auth=$_authToken");
+      final favouriteData = json.decode(favouriteResponse.body);
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -66,12 +76,14 @@ class Products with ChangeNotifier {
           title: prodData['title'],
           description: prodData['description'],
           price: double.parse(prodData['price'].toString()),
-          isFavourite: prodData['isFavourite'],
+          isFavourite:
+              favouriteData == null ? false : favouriteData[prodId] ?? false,
           imageURL: prodData['imageURL'],
         ));
       });
       _items = loadedProducts;
       notifyListeners();
+      return loadedProducts;
     } catch (error) {
       print(error);
       throw error;

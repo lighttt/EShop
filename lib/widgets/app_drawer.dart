@@ -1,4 +1,5 @@
 import 'package:eshop/provider/auth_provider.dart';
+import 'package:eshop/screens/auth_screen.dart';
 import 'package:eshop/screens/order_screen.dart';
 import 'package:eshop/screens/product_overview_screen.dart';
 import 'package:eshop/screens/user_product_screen.dart';
@@ -51,6 +52,7 @@ class AppDrawer extends StatelessWidget {
             title: Text("Logout"),
             onTap: () async {
               await Provider.of<AuthProvider>(context, listen: false).logout();
+              Navigator.pushReplacementNamed(context, AuthScreen.routeName);
             },
           ),
           Divider()
