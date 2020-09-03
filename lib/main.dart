@@ -19,7 +19,54 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //firebase app initialize
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(SplashClass());
+}
+
+class SplashClass extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, Products>(
+            create: (context) => Products("", "", []),
+            update: (context, AuthProvider auth, Products previousProducts) {
+              return Products(auth.token, auth.userId,
+                  previousProducts == null ? [] : previousProducts.items);
+            }),
+        ChangeNotifierProvider(
+          create: (context) => Cart(),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, Orders>(
+          create: (context) => Orders("", "", []),
+          update: (context, AuthProvider auth, Orders previousOrders) => Orders(
+              auth.token,
+              auth.userId,
+              previousOrders == null ? [] : previousOrders.orders),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'E-Shop',
+        theme: ThemeData(
+            primaryColor: Colors.green,
+            accentColor: Colors.red,
+            fontFamily: "Lato"),
+        home: MyApp(),
+        routes: {
+          ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
+          ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),
+          CartScreen.routeName: (ctx) => CartScreen(),
+          OrderScreen.routeName: (ctx) => OrderScreen(),
+          UserProductScreen.routeName: (ctx) => UserProductScreen(),
+          EditProductScreen.routeName: (ctx) => EditProductScreen(),
+          AuthScreen.routeName: (ctx) => AuthScreen()
+        },
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -31,77 +78,21 @@ class _MyAppState extends State<MyApp> {
   bool _isInit = true;
   bool _isLogin = false;
 
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit) {
+      checkLogin();
+    }
+    _isInit = false;
+  }
 
-//  Future<void> getCurrentUser() async {
-//    final response = _firebaseAuth.currentUser;
-//    if (response != null) {
-//      //refresh the previous
-//      final newToken = await response.getIdToken();
-//      Provider.of<AuthProvider>(context, listen: false)
-//          .updateNewToken(newToken, response.uid);
-//      _isLogin = true;
-//    }
-//    _isLogin = false;
-//  }
-//
-//  @override
-//  void didChangeDependencies() {
-//    if (_isInit) {
-//      getCurrentUser();
-//    }
-//    _isInit = false;
-//    super.didChangeDependencies();
-//  }
+  void checkLogin() async {
+    _isLogin = await Provider.of<AuthProvider>(context).tryAutoLogin();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => AuthProvider(),
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, Products>(
-            create: (context) => Products("", "", []),
-            update: (context, AuthProvider auth, Products previousProducts) {
-              return Products(auth.authToken, auth.userId,
-                  previousProducts == null ? [] : previousProducts.items);
-            }),
-        ChangeNotifierProvider(
-          create: (context) => Cart(),
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, Orders>(
-          create: (context) => Orders("", "", []),
-          update: (context, AuthProvider auth, Orders previousOrders) => Orders(
-              auth.authToken,
-              auth.userId,
-              previousOrders == null ? [] : previousOrders.orders),
-        ),
-      ],
-      child: Consumer<AuthProvider>(
-        builder: (ctx, auth, _) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'E-Shop',
-            theme: ThemeData(
-                primaryColor: Colors.green,
-                accentColor: Colors.red,
-                fontFamily: "Lato"),
-            home: _firebaseAuth.currentUser == null
-                ? AuthScreen()
-                : ProductOverviewScreen(),
-            routes: {
-              ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
-              ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),
-              CartScreen.routeName: (ctx) => CartScreen(),
-              OrderScreen.routeName: (ctx) => OrderScreen(),
-              UserProductScreen.routeName: (ctx) => UserProductScreen(),
-              EditProductScreen.routeName: (ctx) => EditProductScreen(),
-              AuthScreen.routeName: (ctx) => AuthScreen()
-            },
-          );
-        },
-      ),
-    );
+    return _isLogin ? ProductOverviewScreen() : AuthScreen();
   }
 }
