@@ -22,10 +22,15 @@ class OrderScreen extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : ListView.builder(
-                  itemBuilder: (ctx, index) => OrderItem(snapshot.data[index]),
-                  itemCount: snapshot.data.length,
-                );
+              : snapshot.hasData
+                  ? ListView.builder(
+                      itemBuilder: (ctx, index) =>
+                          OrderItem(snapshot.data[index]),
+                      itemCount: snapshot.data.length == null
+                          ? 0
+                          : snapshot.data.length,
+                    )
+                  : Center(child: Text("No orders found!"));
         },
       ),
     );

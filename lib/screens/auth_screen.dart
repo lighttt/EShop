@@ -85,7 +85,13 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
+  //animation var
+  AnimationController _controller;
+  Animation<Offset> _slideAnimation;
+  Animation<double> _opacityAnimation;
+
   //vars
   AuthMode _authMode = AuthMode.Login;
   TextEditingController _passwordController = TextEditingController();
@@ -93,7 +99,6 @@ class _AuthCardState extends State<AuthCard> {
 
   //form key
   final GlobalKey<FormState> _formKey = GlobalKey();
-
   Map<String, String> _authData = {
     'email': "",
     'password': "",
@@ -155,6 +160,28 @@ class _AuthCardState extends State<AuthCard> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    //initalize animation
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+    _slideAnimation = Tween<Offset>(begin: Offset(0, 0), end: Offset(0, -1.5))
+        .animate(
+            CurvedAnimation(parent: _controller, curve: Curves.easeInCubic));
+    _opacityAnimation = Tween(begin: 1.0, end: 0.0).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeInCubic));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+    _passwordController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Card(
@@ -162,8 +189,10 @@ class _AuthCardState extends State<AuthCard> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: Container(
+      child: AnimatedContainer(
         height: _authMode == AuthMode.Signup ? 340 : 300,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.bounceInOut,
         width: deviceSize.width * 0.75,
         constraints:
             BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 340 : 300),
@@ -201,22 +230,44 @@ class _AuthCardState extends State<AuthCard> {
                   _authData['password'] = value;
                 },
               ),
-              if (_authMode == AuthMode.Signup)
-                TextFormField(
-                  decoration: InputDecoration(labelText: "Confirm Password"),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value.isEmpty || value != _passwordController.text) {
-                      return "Passwords do not match";
-                    }
-                    return null;
-                  },
+              AnimatedContainer(
+                constraints: BoxConstraints(
+                  minHeight: _authMode == AuthMode.Signup ? 60 : 0,
+                  maxHeight: _authMode == AuthMode.Signup ? 120 : 0,
                 ),
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeIn,
+                child: FadeTransition(
+                  opacity: _opacityAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: TextFormField(
+                      enabled: _authMode == AuthMode.Signup,
+                      decoration:
+                          InputDecoration(labelText: "Confirm Password"),
+                      obscureText: true,
+                      validator: _authMode == AuthMode.Signup
+                          ? (value) {
+                              if (value.isEmpty ||
+                                  value != _passwordController.text) {
+                                return "Passwords do not match";
+                              }
+                              return null;
+                            }
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 20,
               ),
               if (_isLoading)
-                CircularProgressIndicator()
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.topCenter,
+                  child: CircularProgressIndicator(),
+                )
               else
                 RaisedButton(
                   onPressed: _saveForm,
