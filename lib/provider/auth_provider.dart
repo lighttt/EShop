@@ -43,7 +43,8 @@ class AuthProvider extends ChangeNotifier {
       final idTokenResult = await _firebaseAuth.currentUser.getIdTokenResult();
       _authToken = idTokenResult.token;
       _expiryDate = DateTime.now()
-          .add(Duration(seconds: idTokenResult.expirationTime.second));
+          .add(Duration(hours: idTokenResult.expirationTime.hour));
+      print(idTokenResult.expirationTime.hour);
 
       //start auto logout
       _autoLogout();

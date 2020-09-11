@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:eshop/provider/order_provider.dart' as oi;
+import 'package:intl/intl.dart';
 
 class OrderItem extends StatefulWidget {
   final oi.OrderItem order;
@@ -21,7 +22,7 @@ class _OrderItemState extends State<OrderItem> {
         children: <Widget>[
           ListTile(
             title: Text("\$ ${widget.order.amount}"),
-            subtitle: Text("${widget.order.dateTime.toString()}"),
+            subtitle: Text(DateFormat.yMMMEd().format(widget.order.dateTime)),
             trailing: IconButton(
               icon:
                   _expanded ? Icon(Icons.expand_less) : Icon(Icons.expand_more),

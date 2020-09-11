@@ -1,6 +1,8 @@
+import 'package:eshop/helper/custom_route.dart';
 import 'package:eshop/provider/cart_provider.dart';
 import 'package:eshop/provider/products_provider.dart';
 import 'package:eshop/screens/cart_screen.dart';
+import 'package:eshop/screens/order_screen.dart';
 import 'package:eshop/widgets/app_drawer.dart';
 import 'package:eshop/widgets/badge.dart';
 import 'package:eshop/widgets/product_grid.dart';
@@ -51,7 +53,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             child: IconButton(
               icon: Icon(Icons.shopping_cart),
               onPressed: () {
-                Navigator.pushNamed(context, CartScreen.routeName);
+                Navigator.of(context)
+                    .push(CustomRoute(builder: (ctx) => CartScreen()));
+                // Navigator.pushNamed(context, CartScreen.routeName);
               },
             ),
           )

@@ -1,3 +1,4 @@
+import 'package:eshop/helper/custom_route.dart';
 import 'package:eshop/provider/auth_provider.dart';
 import 'package:eshop/provider/order_provider.dart';
 import 'package:eshop/provider/products_provider.dart';
@@ -53,7 +54,11 @@ class SplashClass extends StatelessWidget {
         theme: ThemeData(
             primaryColor: Colors.green,
             accentColor: Colors.red,
-            fontFamily: "Lato"),
+            fontFamily: "Lato",
+            pageTransitionsTheme: PageTransitionsTheme(builders: {
+              TargetPlatform.android: CustomPageTransitionBuilder(),
+              TargetPlatform.iOS: CustomPageTransitionBuilder(),
+            })),
         home: MyApp(),
         routes: {
           ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
