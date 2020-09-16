@@ -5,6 +5,7 @@ import 'package:eshop/screens/cart_screen.dart';
 import 'package:eshop/screens/order_screen.dart';
 import 'package:eshop/widgets/app_drawer.dart';
 import 'package:eshop/widgets/badge.dart';
+import 'package:eshop/widgets/custom_search_delegate.dart';
 import 'package:eshop/widgets/product_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -71,6 +72,12 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                     child: CircularProgressIndicator(),
                   )
                 : ProductGrid(_showFavourites),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showSearch(context: context, delegate: CustomSearchDelegate());
+        },
+        child: Icon(Icons.search),
       ),
     );
   }

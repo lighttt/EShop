@@ -9,11 +9,11 @@ import 'package:eshop/screens/order_screen.dart';
 import 'package:eshop/screens/product_details_screen.dart';
 import 'package:eshop/screens/product_overview_screen.dart';
 import 'package:eshop/screens/user_product_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'provider/cart_provider.dart';
+import 'package:custom_splash/custom_splash.dart';
 
 Future<void> main() async {
   // widgets initialize
@@ -82,6 +82,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isInit = true;
   bool _isLogin = false;
+  Map<int, Widget> output = {1: AuthScreen(), 2: ProductOverviewScreen()};
 
   @override
   void didChangeDependencies() {
@@ -98,6 +99,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLogin ? ProductOverviewScreen() : AuthScreen();
+    return CustomSplash(
+        imagePath: 'assets/images/logo.png',
+        backGroundColor: Colors.pink[100],
+        animationEffect: 'zoom-in',
+        logoSize: 200,
+        type: CustomSplashType.StaticDuration,
+        duration: 2500,
+        home: _isLogin ? ProductOverviewScreen() : AuthScreen());
   }
 }

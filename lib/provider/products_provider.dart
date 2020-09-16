@@ -132,4 +132,16 @@ class Products with ChangeNotifier {
       existingProduct = null;
     }
   }
+
+  //get the list of search item that matches query
+  List<Product> getSearchItems(String query) {
+    if (query.isNotEmpty && query != null) {
+      notifyListeners();
+      return _items
+          .where((prod) => prod.title.toLowerCase().startsWith(query))
+          .toList();
+    }
+    notifyListeners();
+    return [];
+  }
 }
